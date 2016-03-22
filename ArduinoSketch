@@ -1,0 +1,70 @@
+
+#include <Adafruit_NeoPixel.h>
+int ldrVal;
+int switchPos;
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(24, 6, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+pixels.begin();
+
+pinMode(2, INPUT);
+
+pixels.show();
+ Serial.begin(9600);
+
+}
+
+void loop(){
+
+
+ldrVal = analogRead (A0);
+
+Serial.println(ldrVal);
+
+//delay(200);
+
+if(ldrVal<100){ //check if phne is present and put everything up to behaviour 3 inside this IF
+
+
+switchPos = digitalRead(2);//phone is present so now check switch
+
+//keep in this bad connection loop until the switch goes off
+while(switchPos == 1){
+  switchPos = digitalRead(2);
+  pixels.setPixelColor(0, 255, 255, 255); //bad connection
+  pixels.show();
+  delay(200);// 
+}
+
+
+pixels.setPixelColor(0, 0, 255, 0); //good connect start
+pixels.show();
+delay(200);// good connect end
+
+delay(500); //adjust for delay between connect and sleep
+
+pixels.setPixelColor(0, 0, 0, 255); //sleep start
+pixels.show();
+delay(200);// sleep end
+
+delay(500); //adjust for delay between sleep and wake
+
+while(ldrVal < 100){
+  ldrVal = analogRead (A0);
+  pixels.setPixelColor(0, 255, 0, 0); //wake start
+  pixels.show();
+  delay(200);// wake end
+}
+
+
+}
+
+
+ 
+  pixels.setPixelColor(0, 0, 0, 0); //wake off
+  pixels.show();
+ 
+  
+  
+}
